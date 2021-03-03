@@ -12,6 +12,7 @@
     include 'includes/functions.php';
     include 'includes/DB/db_config.php';
     include 'includes/setters_getters.php';
+    include 'includes/wc-partially-completed.php';
 
     // Add Action
     add_action('woocommerce_thankyou', 'order');
