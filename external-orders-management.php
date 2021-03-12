@@ -209,140 +209,143 @@
 
             // Loop result
             while($rowItem = $resItem->fetch_assoc()){
-                
-                // Item name
-                $_item_name = $rowItem['order_item_name'];
-                // Order Item ID
-                $_item_id = $rowItem['order_item_id'];
 
-                // Get order
-                $sqlItemMeta = 'SELECT * FROM wp_woocommerce_order_itemmeta WHERE order_item_id = '.$_item_id;
+                // DEF VALUES
+                $sku = '';
+                $qty = 1;
+                $regular_price = 0;
+                $sale_price = 0;
+                $discount = 0;
+                $product_id = 0;
+                $variation_id = 0;
 
-                // Get Result
-                $resItemMeta = $conn->query($sqlItemMeta);
+                // Item Name
+                $item_name = $rowItem['order_item_name'];
 
-                // Check result
-                if($resItemMeta->num_rows > 0){
+                // Item ID
+                $itemID = $rowItem['order_item_id'];
 
-                    // Default Variable Values
-                    $_product_id = $_variation_id = 0;
+                if($rowItem['order_item_type'] == 'line_item'){
+                    
+                    // Set type
+                    $type = 'item';
 
-                    // Loop Result
-                    while($rowItemMeta = $resItemMeta->fetch_assoc()){
+                    // Initialize SQL Query --> wp_woocommerce_order_itemmeta
+                    $sqlItemMeta = 'SELECT * FROM wp_woocommerce_order_itemmeta WHERE order_item_id = '.$itemID.'';
 
-                        switch($rowItemMeta['meta_key']){
-                            // QTY
-                            case '_qty':
-                                $_qty = $rowItemMeta['meta_value'];
-                                break;
-                            // Product ID
-                            case '_product_id':
-                                $_product_id = $rowItemMeta['meta_value'];
-                                break;
-                            // Variation ID
-                            case '_variation_id':
-                                $_variation_id = $rowItemMeta['meta_value'];
-                                break;
-                            // Cost
-                            case 'cost':
-                                $_cost = $rowItemMeta['meta_value'];
-                                break;
-                            // Instance ID
-                            // case 'instance_id':
-                            //     $_instance_id = $rowItemMeta['meta_value'];
-                            //     break;
-                            // Default
-                            default:
-                                break;
-                            
+                    // Get Result
+                    $resItemMeta = $conn->query($sqlItemMeta);
+
+                    // Check result
+                    if($resItemMeta->num_rows > 0){
+
+                        // Loop Result
+                        while($rowItemMeta = $resItemMeta->fetch_assoc()){
+
+                            // Check meta_key
+                            switch($rowItemMeta['meta_key']){
+                                // Product ID
+                                case '_product_id':
+                                    $product_id = $rowItemMeta['meta_value'];
+                                    break;
+                                // Variation ID
+                                case '_variation_id':
+                                    $variation_id = $rowItemMeta['meta_value'];
+                                    break;
+                                // QTY
+                                case '_qty':
+                                    $qty = $rowItemMeta['meta_value'];
+                                    break;
+                                // Default
+                                default:
+                                    break;
+                            }
+
+                        } // wp_woocommerce_order_itemmeta
+
+                        // Initialize SQL Query --> wp_postmeta || VARIABLE <> SIMPLE
+                        if($variation_id == 0){
+                            $sqlItemPost = 'SELECT * FROM wp_postmeta WHERE post_id = '.$product_id.'';
+                        } else {
+                            $sqlItemPost = 'SELECT * FROM wp_postmeta WHERE post_id = '.$variation_id.'';
                         }
-                    } // End of while | Order itemmeta
 
-                    // Default Variable Values
-                    $sqlItemPost = NULL;
-                    $total = 0;
-
-                    // Check if it's Simple Product
-                    if($_variation_id != 0){
-                        // Intialize SQL Query --> Get product meta
-                        $sqlItemPost = 'SELECT * FROM wp_postmeta WHERE post_id = '.$_variation_id.'';
-                    } else {
-                        // Intialize SQL Query --> Get product meta
-                        $sqlItemPost = 'SELECT * FROM wp_postmeta WHERE post_id = '.$_product_id.'';
-                    }
-
-                    // Check if Query Exists
-                    if($sqlItemPost !== NULL){
-
-                        // Get Result
+                        // Get result
                         $resItemPost = $conn->query($sqlItemPost);
 
-                        // Check result
+                        // Check Result
                         if($resItemPost->num_rows > 0){
 
-                            // Result Loop
+                            // Loop Result
                             while($rowItemPost = $resItemPost->fetch_assoc()){
-                                
+
+                                // Check meta_key
                                 switch($rowItemPost['meta_key']){
                                     // Regular Price
                                     case '_regular_price':
-                                        $total = $rowItemPost['meta_value'];
+                                        $regular_price = $rowItemPost['meta_value'];
                                         break;
                                     // Sale Price
                                     case '_sale_price':
-                                        $sale = $rowItemPost['meta_value'];
+                                        $sale_price = $rowItemPost['meta_value'];
                                         break;
                                     // SKU
                                     case '_sku':
-                                        // strtoupper() --> Make a string uppercase
-                                        $sku = strtoupper($rowItemPost['meta_value']);
+                                        $sku = (string)strtoupper($rowItemPost['meta_value']);
                                         break;
                                     // Default
-                                    default: 
+                                    default:
                                         break;
                                 }
-                            }  // End of while | Product meta
-
-                            // Set Type
-                            $type = 'item';
+                            } // wp_postmeta
                         }
-                    } else {
-                        // Set Total as Cost ---> ship OR coupon
-                        $total = $_cost;
-                        $type = 'ship';
+
+                        // Check disc
+                        if($sale_price != 0){
+                            $discount = $regular_price - $sale_price;
+                        }
+                        
                     }
 
-                    // Set Discount --> Default Value 0
-                    if($sale != 0){
-                        $_discount = $total - $sale;
-                    }else{
-                        $_discount = 0;
+                } elseif($rowItem['order_item_type'] == 'shipping'){
+
+                    // Set type 
+                    $type ='ship';
+
+                    // Initialize SQL Query --> wp_woocommerce_order_itemmeta
+                    $sqlShipMeta = 'SELECT * FROM wp_woocommerce_order_itemmeta WHERE order_item_id = '.$itemID.'';
+
+                    // Get Result
+                    $resShipMeta = $conn->query($sqlShipMeta);
+
+                    // Check result
+                    if($resShipMeta->num_rows > 0){
+                        
+                        // Loop Result
+                        while($rowShipMeta = $resShipMeta->fetch_assoc()){
+
+                            // Check meta_key
+                            switch($rowShipMeta['meta_key']){
+                                // Cost
+                                case 'cost':
+                                    $regular_price = $rowShipMeta['meta_value'];
+                                    break;
+                                // Default
+                                default:
+                                    break;
+                            }
+                        } // wp_woocommerce_order_itemmeta
                     }
                 }
 
-                // Connect to external
-                // $connEx = openCon();
+                $string = 'INSERT INTO items(id, order_id, name, qty, total, discount, sku, type)
+                            VALUES("'.$_code.'/'.$itemID.'","'.$_code.'/'.$order_id.'","'.$item_name.'",'.$qty.','.$regular_price.','.$discount.',"'.$sku.'","'.$type.'")';
 
-                // Initialize SQL Query --> Store Items
-                $sqlInsertItems = 'INSERT INTO items(id, order_id, name, qty, total, discount, sku, type)
-                                    VALUES ("'.$_code.'/'.$_item_id.'","'.$_code.'/'.$order_id.'","'.$_item_name.'",'.$_qty.','.$total.','.$_discount.',"'.$sku.'","'.$type.'")';
+                store_item($string);
 
-                store_item($sqlInsertItems);
-                
-
-                $sqlTest = ''.$_code.'/'.$_item_id.'","'.$_code.'/'.$order_id.'","'.$_item_name.'",'.$_qty.','.$total.','.$_discount.',"'.$sku.'","'.$type.'';
-
-                // // Insert result
-                // if($connEx->query($sqlInsertItems)){
-                //     $test .= 'OK Order Items | ';
-                // } else {
-                //     $test .= $conn->error;
-                // }
-
-                // Disconnect from external
-                // $connEx->close();
-            }
+            } // wp_woocommerce_order_items
         }
+
         
         $conn->close();
         
