@@ -6,8 +6,8 @@
 
     // REGISTER STATUS Partially Completed
     function wpblog_wc_register_post_statuses() {
-        register_post_status( 'wc-partially-completed', array(
-            'label' => _x( 'Partailly Completed', 'WooCommerce Order status', 'text_domain' ),
+        register_post_status( 'wc-partially', array(
+            'label' => _x( 'Partially Completed', 'WooCommerce Order status', 'text_domain' ),
             'public' => true,
             'exclude_from_search' => false,
             'show_in_admin_all_list' => true,
@@ -19,7 +19,7 @@
 
     // ADD STATUS CHANGE
     function wpblog_wc_add_order_statuses( $order_statuses ) {
-        $order_statuses['wc-partially-completed'] = _x( 'Partailly Completed', 'WooCommerce Order status', 'text_domain' );
+        $order_statuses['wc-partially'] = _x( 'Partially Completed', 'WooCommerce Order status', 'text_domain' );
         return $order_statuses;
     }
     add_filter( 'wc_order_statuses', 'wpblog_wc_add_order_statuses' );
