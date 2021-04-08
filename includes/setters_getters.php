@@ -1,6 +1,6 @@
 <?php
     // Includes
-    include './DB/db_config.php';
+    // include './DB/db_config.php';
 
     /**
      * @title   Set Payment Method
@@ -327,83 +327,5 @@
         }
 
         return $_status;
-
-    }
-
-    /**
-     * @title   Store customer to the DB
-     * @param   $_name, $_address, $_post, $_country, $_email, $_phone, $_vat, 
-     *          $_bus_name, $_bus_ad, $_bus_city, $_bus_post, $_bus_phone
-     */
-    function store_customer($_email, $_name, $_phone, $_address, $_city, $_post, $_country, $_vat, 
-                            $_bus_ad, $_bus_name, $_bus_city, $_bus_post, $_bus_phone){
-        
-        // Connect to DB
-        $conn = openCon();
-        
-        // Initialize SQL Query --> Insert into Customers
-        $sql = 'INSERT INTO customers (email, name, phone, address, city, post, country, vat, bus_ad, bus_name, bus_city, bus_post, bus_phone)
-                VALUES ("'.$_email.'","'.$_name.'","'.$_phone.'","'.$_address.'","'.$_city.'","'.$_post.'","'.$_country.'","'.$_vat.'","'.$_bus_ad.'","'.$_bus_name.'","'.$_bus_city.'","'.$_bus_post.'","'.$_bus_phone.'")';
-
-        // Run Query
-        if ($conn->query($sql) === TRUE){
-            // echo "BOOOOOOOOOOOOOOOOOM -> CUSTOMER<br/>";
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error . "<br/>";
-        }
-
-        // Disconnect from DB
-        closeCon($conn);
-    }
-
-    /**
-     * @title   Store orders to the DB
-     * @param   $_order_id, $_order_date, $_order_status, $_payment_method, $_order_notes,
-     *          $_stripe_fee, $_stripe_payment, $_paypal_fee, $_email, $_trans_id 
-     */ 
-    function store_order($_order_id, $_order_date, $_order_status, $_payment_method, $_order_notes,
-                        $_stripe_fee, $_stripe_payment, $_paypal_fee, $_email, $_trans_id){
-        
-        // Connect to DB 
-        $conn = openCon();
-        
-        // Initialize SQL Query --> Insert into Orders
-        $sql = 'INSERT INTO orders (id, date, status, payment, notes, stripe_fee, stripe_payment, paypal_fee, email, trans_id) 
-                VALUES ("'.$_order_id.'","'.$_order_date.'","'.$_order_status.'","'.$_payment_method.'","'.$_order_notes.'",'.$_stripe_fee.',
-                '.$_stripe_payment.','.$_paypal_fee.',"'.$_email.'","'.$_trans_id.'")';
-
-        // Run Query
-        if ($conn->query($sql) === TRUE){
-            // echo "BOOOOOOOOOOOOOOOOOM -> ORDER<br/>";
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error . "<br/>";
-        }
-
-        // Disconnect from DB
-        closeCon($conn);
-    }
-
-    /**
-     * @title   Store order items to DB
-     * @param   $_id, $_order_id, $_name, $_qty, $_total, $_discount, $_sku, $_type 
-     */
-    function store_items($_id, $_order_id, $_name, $_qty, $_total, $_discount, $_sku, $_type){
-
-        // Connect to DB
-        $conn = openCon();
-
-        // Initialize SQL Query --> Insert into items
-        $sql = 'INSERT INTO items (id, order_id, name, qty, total, discount, sku, type) 
-                VALUES ("'.$_id.'","'.$_order_id.'","'.$_name.'","'.$_qty.'","'.$_total.'","'.$_discount.'","'.$_sku.'","'.$_type.'")';
-
-        // Run Query
-        if ($conn->query($sql) === TRUE){
-            // echo "BOOOOOOOOOOOOOOOOOM -> ITEMS<br/>";
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error . "<br/>";
-        }
-
-        // Disconnect from DB
-        closeCon($conn);
     }
 ?>
