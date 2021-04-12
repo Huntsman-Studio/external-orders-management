@@ -16,7 +16,7 @@
         // Check Query
         if ( $conn -> query( $sql ) == TRUE ){   
             // Console LOG
-            console_log( $order_id . " Created \n" . $type . " Added \n" . $value . " Updated \n");
+            // console_log( $order_id . " Created \n" . $type . " Added \n" . $value . " Updated \n");
         } else {
             // Console LOG
             console_log( "An error occured \n" . $conn -> error );
