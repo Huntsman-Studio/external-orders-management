@@ -14,7 +14,7 @@
         // Check Query
         if ( $conn -> query( $sql ) == TRUE ){   
             // Console LOG
-            console_log( $order_id . " Created \n");
+            // console_log( $order_id . " Created \n");
         } else {
             // Console LOG
             console_log( "An error occured " . $conn -> error );
