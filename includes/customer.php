@@ -13,7 +13,7 @@
         if ( $conn -> query( $sql ) == TRUE )
         {   
             // Console LOG
-            console_log( $email . " Added \n" );
+            // console_log( $email . " Added \n" );
         } else {
             // Console LOG
             console_log( "An error occured \n" . $conn -> error );
