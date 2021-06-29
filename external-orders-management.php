@@ -188,7 +188,7 @@
         //C2/15934/2021-02-25 11:30:29/On Hold/Bank Transfer//////ofwurttrrtrtligmr@icare.eu/);
     
         // Check if has VAT
-        if(isset($_vat)){
+        if(isset($_vat) && isset($_bus_ad)){
             $_inv = 1;
         } else {
             $_inv = 0;

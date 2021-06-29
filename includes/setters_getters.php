@@ -26,10 +26,13 @@
                 // $payment = 'PayPal';
                 return 'PayPal';
                 break;
-                case 'ppec_paypal':
-                    // $payment = 'PayPal';
-                    return 'PayPal';
-                    break;
+            case 'ppec_paypal':
+                // $payment = 'PayPal';
+                return 'PayPal';
+                break;
+            case 'vivawallet_native':
+                return 'VivaWallet';
+                break;
             default:
                 // $payment = 'Payment error-->'.$payment;
                 return 'Payment error-->'.$payment;
